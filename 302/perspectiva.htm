@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Pirámide con THREE.js - BufferGeometry</title>
+    <style>
+      body { margin: 0; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script>
+      // Creamos la escena
+      const scene = new THREE.Scene();
+
+      // Creamos la cámara con perspectiva
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 5;
+
+      // Creamos el renderer
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Definimos los puntos vértices de la pirámide
+      const points = [
+        new THREE.Vector3(-1, -1, 1), // punto 0
+        new THREE.Vector3(1, -1, 1), // punto 1
+        new THREE.Vector3(1, -1, -1), // punto 2
+        new THREE.Vector3(-1, -1, -1), // punto 3
+        new THREE.Vector3(0, 1, 0) // punto 4 (vértice superior)
+      ];
+
+      // Definimos las caras de la pirámide
+      const faces = [
+        // Base
+        0, 1, 2,
+        2, 3, 0,
+
+        // Caras laterales
+        0, 4, 1,
+        1, 4, 2,
+        2, 4, 3,
+        3, 4, 0
+      ];
+
+      // Generamos la geometría de la pirámide
+      const geometry = new THREE.BufferGeometry();
+      const vertices = new Float32Array(points.length * 3);
+      const indices = new Uint16Array(faces.length);
+
+      points.forEach((point, i) => {
+        vertices[i * 3] = point.x;
+        vertices[i * 3 + 1] = point.y;
+        vertices[i * 3 + 2] = point.z;
+      });
+
+      indices.set(faces);
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+      // Generamos el material para la pirámide
+      const material = new THREE.MeshBasicMaterial({ color: 0xffFF00 });
+
+      // Creamos la malla de la pirámide
+      const mesh = new THREE.Mesh(geometry, material);
+
+      // Agregamos la malla a la escena
+      scene.add(mesh);
+
+      // Animamos la pirámide
+      function animate() {
+        requestAnimationFrame(animate);
+        mesh.rotation.x += 0.01;
+        mesh.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html>
